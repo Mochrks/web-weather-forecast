@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+    :root {
+      --background: 0 42% 98%;
+      --foreground: 0 69% 0%;
+      --muted: 0 13% 87%;
+      --muted-foreground: 0 12% 39%;
+      --popover: 0 42% 98%;
+      --popover-foreground: 0 69% 0%;
+      --card: 0 42% 98%;
+      --card-foreground: 0 69% 0%;
+      --border: 0 6% 90%;
+      --input: 0 6% 90%;
+      --primary: 0 0% 43%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 0 2% 85%;
+      --secondary-foreground: 0 2% 25%;
+      --accent: 0 2% 85%;
+      --accent-foreground: 0 2% 25%;
+      --destructive: 19 92% 35%;
+      --destructive-foreground: 0 0% 100%;
+      --ring: 0 0% 43%;
+      --chart-1: 0 0% 43%;
+      --chart-2: 0 2% 85%;
+      --chart-3: 0 2% 85%;
+      --chart-4: 0 2% 88%;
+      --chart-5: 0 3% 43%;
+      --radius: 0.5rem;
+    }
+  
+    .dark {
+      --background: 0 32% 0%;
+      --foreground: 0 19% 100%;
+      --muted: 0 13% 13%;
+      --muted-foreground: 0 12% 61%;
+      --popover: 0 32% 0%;
+      --popover-foreground: 0 19% 100%;
+      --card: 0 32% 0%;
+      --card-foreground: 0 19% 100%;
+      --border: 0 6% 10%;
+      --input: 0 6% 10%;
+      --primary: 0 0% 43%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 0 10% 11%;
+      --secondary-foreground: 0 10% 71%;
+      --accent: 0 10% 11%;
+      --accent-foreground: 0 10% 71%;
+      --destructive: 19 92% 56%;
+      --destructive-foreground: 0 0% 0%;
+      --ring: 0 0% 43%;
+      --chart-1: 0 0% 43%;
+      --chart-2: 0 10% 11%;
+      --chart-3: 0 10% 11%;
+      --chart-4: 0 10% 14%;
+      --chart-5: 0 3% 43%;
+    }
+  }
+  
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
