@@ -12,7 +12,7 @@
 
 ## Overview
 
-**Web Weather Forecast** is an advanced webs application designed to provide accurate and real-time weather forecasts from multiple sources. The platform offers comprehensive weather data, including temperature, humidity, wind speed, and more, all presented in an intuitive user interface.
+**Web Weather Forecast** is an advanced webs application designed to provide accurate and real-time weather forecast from multiple sources. The platform offers comprehensive weather data, including temperature, humidity, wind speed, and more, all presented in an intuitive user interface.
 
 ## Features
 
