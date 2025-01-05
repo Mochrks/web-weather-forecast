@@ -68,7 +68,7 @@ export default function WeatherDashboard() {
       </div>
 
       <footer className="mt-12 text-center text-white ">
-        <p>© 2024 Weather Forecast. All rights reserved. </p>
+        <p>&copy; {new Date().getFullYear()} Weather Forecast. All rights reserved. </p>
         <a href="https://github.com/mochrks" target="_blank" rel="noopener noreferrer" className="text-white">
           mochrks
         </a>
