@@ -34,6 +34,7 @@ export default function WeatherDashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
+
         <motion.h1
           className="text-4xl md:text-5xl font-bold text-white dark:text-gray-200 mb-4 md:mb-0"
           initial={{ opacity: 0, y: -50 }}
@@ -48,7 +49,11 @@ export default function WeatherDashboard() {
         </div>
       </div>
       <CitySearch onCityChange={setCity} />
-      <DateSelector selectedDate={selectedDate} onDateChange={setSelectedDate} />
+      <div className='flex items-center justify-between space-x-4 '>
+        <p className='text-white'>Current Weather: {currentWeather.condition} with a temperature of {currentWeather.temperature}°C</p>
+        <DateSelector selectedDate={selectedDate} onDateChange={setSelectedDate} />
+      </div>
+
       <WeatherAlert city={city} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         <CurrentWeather city={city} date={selectedDate} />
