@@ -1,126 +1,105 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Sun, Cloud, CloudRain, CloudSnow, Wind } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import React from 'react'
+import { motion } from 'framer-motion'
+import { Sun, Cloud, CloudRain, CloudSnow, Wind, Droplets, CloudFog, CloudLightning, CloudDrizzle } from 'lucide-react'
+import { GlassCard } from "@/components/ui/glass-card"
+import type { WeatherData } from '@/lib/weather-service'
 
-const weatherIcons = {
-  'sunny': Sun,
-  'cloudy': Cloud,
-  'rainy': CloudRain,
-  'snowy': CloudSnow,
-  'windy': Wind,
+// Map OpenWeatherMap main conditions to Lucide icons
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const weatherIcons: Record<string, React.ComponentType<any>> = {
+  'Clear': Sun,
+  'Clouds': Cloud,
+  'Rain': CloudRain,
+  'Snow': CloudSnow,
+  'Thunderstorm': CloudLightning,
+  'Drizzle': CloudDrizzle,
+  'Mist': CloudFog,
+  'Smoke': CloudFog,
+  'Haze': CloudFog,
+  'Dust': CloudFog,
+  'Fog': CloudFog,
+  'Sand': CloudFog,
+  'Ash': CloudFog,
+  'Squall': Wind,
+  'Tornado': Wind,
 }
 
-export default function CurrentWeather({ city, date }: { city: string, date: Date }) {
-  const [weather, setWeather] = useState({
-    temperature: 25,
-    condition: 'sunny' as keyof typeof weatherIcons,
-    humidity: 60,
-    windSpeed: 10,
-  })
+export default function CurrentWeather({ data }: { data: WeatherData | null }) {
+  if (!data) return null
 
-  useEffect(() => {
-    const fetchWeather = async () => {
-      setWeather({
-        temperature: Math.floor(Math.random() * 35),
-        condition: Object.keys(weatherIcons)[Math.floor(Math.random() * Object.keys(weatherIcons).length)] as keyof typeof weatherIcons,
-        humidity: Math.floor(Math.random() * 100),
-        windSpeed: Math.floor(Math.random() * 30),
-      })
-    }
-    fetchWeather()
-  }, [city, date])
-
-  const WeatherIcon = weatherIcons[weather.condition]
-
-  const getWeatherAnimation = () => {
-    switch (weather.condition) {
-      case 'sunny':
-        return (
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          >
-            <Sun size={120} className="text-yellow-300" />
-          </motion.div>
-        )
-      case 'cloudy':
-        return (
-          <motion.div
-            className="absolute inset-0 flex items-center justify-end"
-
-          >
-            <Cloud size={120} className="text-gray-700 dark:text-gray-200" />
-          </motion.div>
-        )
-      case 'rainy':
-        return (
-          <div className="absolute inset-0 flex items-center justify-end">
-            <CloudRain size={120} className="text-blue-200 dark:text-blue-300" />
-            {[...Array(20)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-0.5 h-4 bg-blue-200  rounded-full"
-                initial={{ y: -10, opacity: 0 }}
-                animate={{ y: 100, opacity: [0, 1, 0] }}
-                transition={{
-                  duration: 1,
-                  repeat: Infinity,
-                  delay: i * 0.1,
-                  ease: "easeIn"
-                }}
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`
-                }}
-              />
-            ))}
-          </div>
-        )
-      default:
-        return <WeatherIcon size={120} className="text-white" />
-    }
-  }
+  const Icon = weatherIcons[data.condition] || Sun
 
   return (
-    <Card className="bg-transparent backdrop-blur-lg text-white dark:bg-gray-800/50 dark:text-gray-200 overflow-hidden py-5">
-      <CardHeader>
-        <CardTitle className="text-2xl">{city}</CardTitle>
-        <CardDescription className="text-white dark:text-gray-200 ">
-          {date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={weather.temperature}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <p className="text-6xl font-bold">{weather.temperature}°C</p>
-              <p className="text-2xl mt-2 capitalize">{weather.condition}</p>
-            </motion.div>
-          </AnimatePresence>
-          {getWeatherAnimation()}
+    <GlassCard className="w-full relative overflow-visible py-10 px-8 min-h-[400px] flex flex-col justify-between group">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between z-10 relative">
+        <div className="text-left">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">
+              {data.city}
+            </h2>
+            <p className="text-white/60 text-xl font-medium flex items-center gap-2">
+              <span className="bg-white/20 px-2 py-0.5 rounded text-sm uppercase tracking-wider">{data.country}</span>
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="mt-8"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="flex items-start">
+              <span className="text-[8rem] leading-none font-bold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 tracking-tighter">
+                {data.temperature}°
+              </span>
+            </div>
+            <p className="text-2xl text-white/80 capitalize font-light mt-[-10px] pl-2">{data.description}</p>
+          </motion.div>
         </div>
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <div className="bg-white/20 p-4 rounded-lg">
-            <p className="text-sm text-white/70 dark:text-gray-200">Humidity</p>
-            <p className="text-2xl font-semibold">{weather.humidity}%</p>
+
+        <motion.div
+          className="absolute top-0 right-0 md:relative md:top-auto md:right-auto opacity-50 md:opacity-100 scale-75 md:scale-100 origin-top-right transition-all duration-500 group-hover:scale-110 group-hover:rotate-3"
+          initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
+        >
+          <div className="absolute inset-0 blur-[60px] bg-white/30 rounded-full" />
+          <Icon size={200} className="relative z-10 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" strokeWidth={1} />
+        </motion.div>
+      </div>
+
+      <motion.div
+        className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-white/10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5">
+          <div className="p-3 rounded-full bg-white/10 text-blue-200">
+            <Wind size={24} />
           </div>
-          <div className="bg-white/20 p-4 rounded-lg">
-            <p className="text-sm text-white/70 dark:text-gray-200">Wind Speed</p>
-            <p className="text-2xl font-semibold">{weather.windSpeed} km/h</p>
+          <div>
+            <p className="text-sm text-white/50 font-medium uppercase tracking-wider">Wind</p>
+            <p className="text-xl font-semibold text-white">{data.windSpeed} <span className="text-sm font-normal text-white/60">km/h</span></p>
           </div>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex items-center space-x-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5">
+          <div className="p-3 rounded-full bg-white/10 text-blue-200">
+            <Droplets size={24} />
+          </div>
+          <div>
+            <p className="text-sm text-white/50 font-medium uppercase tracking-wider">Humidity</p>
+            <p className="text-xl font-semibold text-white">{data.humidity}<span className="text-sm font-normal text-white/60">%</span></p>
+          </div>
+        </div>
+      </motion.div>
+    </GlassCard>
   )
 }
 

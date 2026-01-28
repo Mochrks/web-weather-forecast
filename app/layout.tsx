@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Advanced Weather Forecast',
+  title: 'Weathify',
   description: 'Interactive and animated weather forecast application with complex features',
 }
 
@@ -18,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <div className="relative z-10 min-h-screen">
+            {children}
+          </div>
         </ThemeProvider>
       </body>
     </html>
