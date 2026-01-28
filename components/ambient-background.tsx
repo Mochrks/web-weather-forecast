@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { WeatherScene } from "./weather-scene/WeatherScene"
 
 type WeatherCondition = 'Clear' | 'Clouds' | 'Rain' | 'Snow' | 'Thunderstorm' | 'Drizzle' | 'Mist' | string
 
@@ -49,10 +48,7 @@ export function AmbientBackground({ condition = 'Clear' }: AmbientBackgroundProp
                 transition={{ duration: 1.5 }}
             />
 
-            {/* 3D Scene Layer */}
-            <div className="absolute inset-0 z-10">
-                {/* <WeatherScene condition={condition} /> */}
-            </div>
+
         </div>
     )
 }
