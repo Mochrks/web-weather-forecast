@@ -60,35 +60,71 @@
   }
 }
 
-/* Glassmorphism Utilities */
+/* Glassmorphism Utilities - iOS 26 Inspired */
 .glass {
-  @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-lg;
+  @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-3xl;
 }
 
 .dark .glass {
-  @apply bg-black/20 border-white/10;
+  @apply bg-black/5 border-white/10;
 }
 
 .glass-panel {
-  @apply bg-white/30 backdrop-blur-xl border border-white/30 shadow-xl;
+  @apply bg-white/10 backdrop-blur-3xl border border-white/20 shadow-2xl rounded-[2rem];
 }
 
 .dark .glass-panel {
-    @apply bg-black/40 border-white/10;
+  @apply bg-black/20 border-white/5;
+}
+
+.glass-card {
+  @apply bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 shadow-lg rounded-[2rem] transition-all duration-300 hover:bg-white/15 hover:scale-[1.02];
+}
+
+.dark .glass-card {
+  @apply from-white/5 to-white/0 hover:bg-white/10;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
 }
 
 /* Animations */
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 8s ease-in-out infinite;
 }
 
 @keyframes float {
   0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+  50% { transform: translateY(-15px); }
   100% { transform: translateY(0px); }
 }
 
 .animate-pulse-slow {
-    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+
+
+/* Lenis Recommended Styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}

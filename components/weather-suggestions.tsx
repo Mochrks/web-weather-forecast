@@ -1,6 +1,5 @@
 "use client"
 
-import { GlassCard } from "@/components/ui/glass-card"
 import { Shirt, Tent, Umbrella, Coffee, Sun } from "lucide-react"
 
 interface WeatherSuggestionsProps {
@@ -57,22 +56,24 @@ export default function WeatherSuggestions({ condition, temp }: WeatherSuggestio
     const { outfit, activity, icon: Icon } = getSuggestions(condition, temp);
 
     return (
-        <GlassCard className="h-full">
-            <div className="flex items-center space-x-2 mb-4">
-                <Icon className="text-white/80" size={24} />
-                <h3 className="text-lg font-semibold text-white">Suggestions</h3>
+        <div className="glass-panel p-6 h-full flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-6">
+                <div className="p-2.5 bg-white/10 rounded-full border border-white/10">
+                    <Icon className="text-white" size={20} />
+                </div>
+                <h3 className="text-lg font-bold text-white tracking-tight">AI Suggestions</h3>
             </div>
 
-            <div className="space-y-4">
-                <div className="bg-white/5 p-3 rounded-lg">
-                    <p className="text-xs text-white/50 uppercase tracking-wider mb-1">Outfit</p>
-                    <p className="text-white font-medium">{outfit}</p>
+            <div className="space-y-4 flex-grow">
+                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                    <p className="text-[10px] text-blue-200 font-bold uppercase tracking-wider mb-2">Recommended Outfit</p>
+                    <p className="text-white/90 text-sm leading-relaxed">{outfit}</p>
                 </div>
-                <div className="bg-white/5 p-3 rounded-lg">
-                    <p className="text-xs text-white/50 uppercase tracking-wider mb-1">Activity</p>
-                    <p className="text-white font-medium">{activity}</p>
+                <div className="bg-white/5 p-4 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors">
+                    <p className="text-[10px] text-green-200 font-bold uppercase tracking-wider mb-2">Best Activity</p>
+                    <p className="text-white/90 text-sm leading-relaxed">{activity}</p>
                 </div>
             </div>
-        </GlassCard>
+        </div>
     )
 }

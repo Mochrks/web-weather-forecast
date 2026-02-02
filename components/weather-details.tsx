@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Droplets, Wind, Sun, Umbrella, Thermometer, Gauge } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface WeatherDetail {
   icon: React.ElementType
@@ -30,31 +29,27 @@ export default function WeatherDetails({ city }: { city: string }) {
   }, [city])
 
   return (
-    <Card className="bg-transparent backdrop-blur-lg text-white dark:bg-gray-800/50 dark:text-gray-200">
-      <CardHeader>
-        <CardTitle className="text-2xl">Weather Details</CardTitle>
-        <CardDescription className="text-white/70">{city}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {details.map((detail, index) => (
-            <motion.div
-              key={detail.label}
-              className="flex items-center space-x-2 bg-white/20 p-3 rounded-lg"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <detail.icon className="text-yellow-300" size={24} />
-              <div>
-                <p className="text-sm text-white/70">{detail.label}</p>
-                <p className="text-lg font-semibold">{detail.value}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="h-full">
+      <div className="grid grid-cols-2 gap-4 h-full content-start">
+        {details.map((detail, index) => (
+          <motion.div
+            key={detail.label}
+            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors aspect-square md:aspect-auto md:h-28 text-center gap-2"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
+          >
+            <div className="p-2.5 rounded-full bg-white/10 mb-1">
+              <detail.icon className="text-white/90" size={20} />
+            </div>
+            <div>
+              <p className="text-xs text-white/50 font-medium uppercase tracking-wider mb-1">{detail.label}</p>
+              <p className="text-base font-bold text-white tracking-tight">{detail.value}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
   )
 }
 
