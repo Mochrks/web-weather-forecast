@@ -16,7 +16,7 @@ export default function SmoothScroll({
 
     useEffect(() => {
         function update(time: number) {
-            // @ts-ignore
+            // @ts-expect-error: lenis instance type is not properly inferred
             lenisRef.current?.lenis?.raf(time * 1000);
         }
 
