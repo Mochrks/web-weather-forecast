@@ -2,16 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════
+   iOS 26 LIQUID GLASS DESIGN SYSTEM
+   Inspired by Apple's iOS 26 Glassmorphism & Liquid Glass
+   ═══════════════════════════════════════════════════════════════ */
+
 @layer base {
   :root {
-    /* Modern Light Palette (Clean, Airy) */
-    --background: 210 40% 98%;
+    /* iOS 26 Light Palette — Ethereal, Luminous */
+    --background: 220 20% 97%;
     --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 262.1 83.3% 57.8%;
+    --primary: 220 90% 56%;
     --primary-foreground: 210 20% 98%;
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 220.9 39.3% 11%;
@@ -23,31 +28,53 @@
     --destructive-foreground: 210 20% 98%;
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 262.1 83.3% 57.8%;
-    --radius: 1rem;
+    --ring: 220 90% 56%;
+    --radius: 1.25rem;
+
+    /* iOS 26 Glass tokens */
+    --glass-bg: rgba(255, 255, 255, 0.12);
+    --glass-bg-hover: rgba(255, 255, 255, 0.18);
+    --glass-border: rgba(255, 255, 255, 0.22);
+    --glass-border-hover: rgba(255, 255, 255, 0.35);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    --glass-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
+    --glass-blur: 24px;
+    --glass-blur-heavy: 48px;
+    --glass-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 
   .dark {
-    /* Premium Dark Palette (Deep, Glassy foundation) */
-    --background: 224 71.4% 4.1%;
+    /* iOS 26 Dark Palette — Deep, Premium, Immersive */
+    --background: 225 25% 4%;
     --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
+    --card: 225 25% 6%;
     --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
+    --popover: 225 25% 6%;
     --popover-foreground: 210 20% 98%;
-    --primary: 263.4 70% 50.4%;
+    --primary: 220 90% 60%;
     --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
+    --secondary: 220 20% 12%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
+    --muted: 220 20% 12%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 220 20% 12%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263.4 70% 50.4%;
+    --border: 220 20% 14%;
+    --input: 220 20% 14%;
+    --ring: 220 90% 60%;
+
+    /* iOS 26 Dark Glass tokens */
+    --glass-bg: rgba(255, 255, 255, 0.04);
+    --glass-bg-hover: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-hover: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+    --glass-shadow-hover: 0 16px 64px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.25);
+    --glass-blur: 32px;
+    --glass-blur-heavy: 64px;
+    --glass-inner-glow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 }
 
@@ -56,59 +83,314 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased transition-colors duration-500;
+    @apply bg-background text-foreground antialiased;
+    transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* Glassmorphism Utilities - iOS 26 Inspired */
+/* ═══════════════════════════════════════════════════════════════
+   iOS 26 LIQUID GLASS COMPONENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Base glass — Frosted panel (like iOS Control Center) */
 .glass {
-  @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-3xl;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
+  border-radius: 1.75rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dark .glass {
-  @apply bg-black/5 border-white/10;
+.glass:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--glass-shadow-hover), var(--glass-inner-glow);
 }
 
+/* Glass panel — Heavier frosted glass (like iOS widgets) */
 .glass-panel {
-  @apply bg-white/10 backdrop-blur-3xl border border-white/20 shadow-2xl rounded-[2rem];
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(2);
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(2);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
+  border-radius: 2rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.dark .glass-panel {
-  @apply bg-black/20 border-white/5;
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  pointer-events: none;
 }
 
+.glass-panel:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--glass-shadow-hover), var(--glass-inner-glow);
+  transform: translateY(-2px);
+}
+
+/* Glass card — Interactive glass tile with liquid glow */
 .glass-card {
-  @apply bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 shadow-lg rounded-[2rem] transition-all duration-300 hover:bg-white/15 hover:scale-[1.02];
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inner-glow);
+  border-radius: 2rem;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.dark .glass-card {
-  @apply from-white/5 to-white/0 hover:bg-white/10;
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
+.glass-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--glass-shadow-hover), var(--glass-inner-glow);
+  transform: translateY(-4px) scale(1.01);
 }
 
-/* Animations */
+.glass-card:hover::before {
+  opacity: 1;
+}
+
+/* Glass pill — Small rounded capsules (tags, badges) */
+.glass-pill {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--glass-inner-glow);
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.glass-pill:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Glass input — Frosted input fields */
+.glass-input {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--glass-inner-glow), 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: var(--glass-inner-glow), 0 0 0 3px rgba(100, 150, 255, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOLOGRAPHIC SHIMMER EFFECT
+   Simulates light refraction across the glass surface
+   ═══════════════════════════════════════════════════════════════ */
+.glass-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-shimmer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.04) 40%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.04) 60%,
+    transparent 70%
+  );
+  animation: shimmer 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  100% { transform: translateX(100%) rotate(25deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATED GLOW BORDER
+   Rotating gradient border like iOS 26 Dynamic Island
+   ═══════════════════════════════════════════════════════════════ */
+.glass-glow {
+  position: relative;
+}
+
+.glass-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--glow-angle, 0deg),
+    rgba(100, 160, 255, 0.4),
+    rgba(140, 100, 255, 0.2),
+    transparent 25%,
+    transparent 75%,
+    rgba(100, 200, 255, 0.3),
+    rgba(100, 160, 255, 0.4)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: glow-rotate 6s linear infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.glass-glow:hover::before {
+  opacity: 1;
+}
+
+@keyframes glow-rotate {
+  to { --glow-angle: 360deg; }
+}
+
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLL & REVEAL ANIMATIONS (GSAP ScrollTrigger compatible)
+   ═══════════════════════════════════════════════════════════════ */
+.scroll-reveal, 
+.scroll-reveal-left, 
+.scroll-reveal-right, 
+.scroll-reveal-scale {
+  /* Default visible state for reliability */
+  opacity: 1;
+  transform: none;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Initial state only when JS is active or for specific animations */
+.js-reveal {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.js-reveal.scroll-reveal { transform: translateY(40px) scale(0.98); }
+.js-reveal.scroll-reveal-left { transform: translateX(-40px); }
+.js-reveal.scroll-reveal-right { transform: translateX(40px); }
+.js-reveal.scroll-reveal-scale { transform: scale(0.95); }
+
+.js-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* Custom staggered Reveal for cards */
+.stagger-reveal > * {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.stagger-reveal.is-active > * {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AMBIENT ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
 .animate-float {
   animation: float 8s ease-in-out infinite;
 }
 
 @keyframes float {
-  0% { transform: translateY(0px); }
+  0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-15px); }
-  100% { transform: translateY(0px); }
 }
 
 .animate-pulse-slow {
-  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
 
+.animate-breathe {
+  animation: breathe 6s ease-in-out infinite;
+}
 
-/* Lenis Recommended Styles */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+.animate-aurora {
+  animation: aurora 12s ease-in-out infinite;
+}
+
+@keyframes aurora {
+  0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+  25% { transform: translateX(30px) translateY(-20px) rotate(2deg); }
+  50% { transform: translateX(-20px) translateY(10px) rotate(-1deg); }
+  75% { transform: translateX(10px) translateY(-30px) rotate(1deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR - Hidden for immersive experience
+   ═══════════════════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LENIS SMOOTH SCROLL STYLES
+   ═══════════════════════════════════════════════════════════════ */
 html.lenis, html.lenis body {
   height: auto;
 }
@@ -127,4 +409,51 @@ html.lenis, html.lenis body {
 
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3D BACKGROUND CANVAS
+   ═══════════════════════════════════════════════════════════════ */
+.three-canvas-container {
+  position: fixed;
+  inset: 0;
+  z-index: -100;
+  pointer-events: none;
+}
+
+.three-canvas-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEXT GRADIENT UTILITY
+   ═══════════════════════════════════════════════════════════════ */
+.text-glass-gradient {
+  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.5) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.8) 0%,
+    rgba(255,255,255,1) 45%,
+    rgba(180,200,255,1) 50%,
+    rgba(255,255,255,1) 55%,
+    rgba(255,255,255,0.8) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: text-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes text-shimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
 }

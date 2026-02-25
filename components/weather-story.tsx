@@ -1,7 +1,7 @@
 "use client"
 
 import { GlassCard } from "@/components/ui/glass-card"
-import { Sparkles } from "lucide-react"
+import { Sparkles, Quote } from "lucide-react"
 
 interface WeatherStoryProps {
     description: string
@@ -38,16 +38,34 @@ export default function WeatherStory({ condition, city, temp }: WeatherStoryProp
     const story = generateStory(condition, temp, city);
 
     return (
-        <GlassCard className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10">
-            <div className="flex items-start gap-4">
-                <div className="p-2 bg-white/10 rounded-full mt-1">
-                    <Sparkles className="h-5 w-5 text-yellow-200" />
+        <GlassCard
+            className="bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent h-full p-8 glass-shimmer glass-glow"
+            glow
+            shimmer
+        >
+            <div className="flex flex-col gap-6 h-full">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="p-3 bg-white/10 rounded-2xl border border-white/5 shadow-inner">
+                            <Sparkles className="h-6 w-6 text-yellow-200 animate-pulse" />
+                        </div>
+                        <h3 className="text-xl font-black text-white tracking-tight uppercase">AI Atmospheric Tale</h3>
+                    </div>
+                    <Quote size={40} className="text-white/5 opacity-40 rotate-180" />
                 </div>
-                <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Daily Story</h3>
-                    <p className="text-white/80 leading-relaxed italic">
+
+                <div className="flex-grow flex flex-col justify-center">
+                    <p className="text-xl md:text-2xl text-white leading-relaxed italic font-bold tracking-wide">
                         &quot;{story}&quot;
                     </p>
+                </div>
+
+                <div className="pt-6 border-t border-white/20 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-white">
+                    <span>Generated Moment</span>
+                    <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full shadow-[0_0_8px_rgba(129,140,248,0.8)]" />
+                        Neural Scripting
+                    </span>
                 </div>
             </div>
         </GlassCard>

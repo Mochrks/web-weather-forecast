@@ -56,14 +56,19 @@ export default function WeeklyForecast({ city }: { city: string }) {
   }, [city])
 
   return (
-    <div className="glass-panel text-white h-full p-6 flex flex-col">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold tracking-tight">7-Day Forecast</h3>
-        <span className="text-white/50 text-sm">{city}</span>
+    <div className="glass-panel text-white h-full p-8 flex flex-col glass-shimmer">
+      <div className="flex justify-between items-center mb-10">
+        <div>
+          <h3 className="text-2xl font-black text-white tracking-tight text-glow">7-Day Forecast</h3>
+          <p className="text-white text-sm font-medium tracking-wide">Extended outlook for {city}</p>
+        </div>
+        <div className="glass-pill px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white">
+          PRO-DATA
+        </div>
       </div>
 
       <div className="flex-grow flex flex-col justify-center">
-        <div className="grid grid-cols-7 gap-2 mb-4">
+        <div className="grid grid-cols-7 gap-3 mb-6">
           {forecast.map((day, index) => {
             const WeatherIcon = weatherIcons[day.condition]
             const isSelected = selectedDay === index
@@ -74,36 +79,47 @@ export default function WeeklyForecast({ city }: { city: string }) {
                     <motion.button
                       layout
                       onClick={() => setSelectedDay(isSelected ? null : index)}
-                      className={`relative flex flex-col items-center justify-between p-3 rounded-2xl transition-all duration-300 border ${isSelected
-                        ? 'bg-white/20 border-white/30 shadow-inner'
-                        : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/10'
-                        } h-28 sm:h-32`}
+                      className={`relative flex flex-col items-center justify-between p-4 rounded-3xl transition-all duration-500 border ${isSelected
+                        ? 'bg-white/20 border-white/40 shadow-[0_0_25px_rgba(255,255,255,0.1)]'
+                        : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'
+                        } h-36 sm:h-44 group`}
                     >
-                      <span className="text-xs font-medium text-white/70">
+                      <span className="text-[10px] font-black text-white uppercase tracking-widest">
                         {day.date.toLocaleDateString('en-US', { weekday: 'short' })}
                       </span>
 
-                      <WeatherIcon
-                        size={24}
-                        className={`my-2 transition-transform duration-500 ${isSelected ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-white/90'}`}
-                      />
+                      <div className="relative">
+                        {isSelected && (
+                          <div className="absolute inset-0 blur-xl bg-white/30 rounded-full animate-pulse-slow" />
+                        )}
+                        <WeatherIcon
+                          size={28}
+                          className={`relative z-10 my-2 transition-all duration-700 ${isSelected ? 'scale-125 text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]' : 'text-white/60 group-hover:scale-110 group-hover:text-white'}`}
+                        />
+                      </div>
 
                       <div className="flex flex-col items-center gap-1">
-                        <span className="text-sm font-bold">{day.temperature.max}°</span>
-                        <span className="text-[10px] text-white/50">{day.temperature.min}°</span>
+                        <span className="text-lg font-black tracking-tighter">{day.temperature.max}°</span>
+                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                          <div className="h-full bg-white/40 rounded-full" style={{ width: `${(day.temperature.max / 40) * 100}%` }} />
+                        </div>
+                        <span className="text-[10px] font-medium text-white/60 tracking-wide">{day.temperature.min}°</span>
                       </div>
 
                       {/* Active Indicator */}
                       {isSelected && (
                         <motion.div
-                          layoutId="activeDay"
-                          className="absolute -bottom-1 w-1 h-1 bg-white rounded-full"
+                          layoutId="activeDayIndicator"
+                          className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-full shadow-[0_0_12px_rgba(255,255,255,0.8)]"
                         />
                       )}
                     </motion.button>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="glass border-white/10 text-white">
-                    <p>Precipitation: {day.precipitation}%</p>
+                  <TooltipContent side="top" className="glass border-white/20 text-white font-bold py-2 px-4 rounded-xl backdrop-blur-3xl">
+                    <p className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-400" />
+                      Precipitation: {day.precipitation}%
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -114,30 +130,39 @@ export default function WeeklyForecast({ city }: { city: string }) {
         <AnimatePresence>
           {selectedDay !== null && (
             <motion.div
-              initial={{ opacity: 0, height: 0, marginTop: 0 }}
-              animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-              exit={{ opacity: 0, height: 0, marginTop: 0 }}
+              initial={{ opacity: 0, height: 0, y: 20 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: 20 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="overflow-hidden"
             >
-              <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex justify-between items-center">
-                <div>
-                  <h4 className="font-semibold text-lg">
-                    {forecast[selectedDay].date.toLocaleDateString('en-US', { weekday: 'long' })}
-                  </h4>
-                  <p className="text-white/60 text-sm capitalize">{forecast[selectedDay].condition}</p>
+              <div className="p-6 bg-white/10 rounded-[2.5rem] border border-white/20 flex flex-col sm:flex-row justify-between items-center gap-6 glass-glow shadow-2xl">
+                <div className="flex items-center gap-6">
+                  <div className="p-5 bg-white/10 rounded-3xl border border-white/10">
+                    {(() => {
+                      const SelectedIcon = weatherIcons[forecast[selectedDay!].condition];
+                      return <SelectedIcon size={40} />;
+                    })()}
+                  </div>
+                  <div>
+                    <h4 className="font-black text-2xl text-white tracking-tight">
+                      {forecast[selectedDay].date.toLocaleDateString('en-US', { weekday: 'long' })}
+                    </h4>
+                    <p className="text-white font-bold uppercase tracking-widest text-[10px] mt-1">{forecast[selectedDay].condition} Forecast</p>
+                  </div>
                 </div>
-                <div className="flex gap-4 text-sm text-right">
-                  <div>
-                    <p className="text-white/50">High</p>
-                    <p className="font-bold">{forecast[selectedDay].temperature.max}°</p>
+                <div className="grid grid-cols-3 gap-8 text-center sm:text-right">
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-white font-black uppercase tracking-widest">High Temp</p>
+                    <p className="font-black text-2xl tracking-tighter text-white">{forecast[selectedDay].temperature.max}°</p>
                   </div>
-                  <div>
-                    <p className="text-white/50">Low</p>
-                    <p className="font-bold">{forecast[selectedDay].temperature.min}°</p>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-white font-black uppercase tracking-widest">Low Temp</p>
+                    <p className="font-black text-2xl tracking-tighter text-white">{forecast[selectedDay].temperature.min}°</p>
                   </div>
-                  <div>
-                    <p className="text-white/50">Rain</p>
-                    <p className="font-bold">{forecast[selectedDay].precipitation}%</p>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-white font-black uppercase tracking-widest">Rain Chance</p>
+                    <p className="font-black text-2xl tracking-tighter text-blue-200">{forecast[selectedDay].precipitation}%</p>
                   </div>
                 </div>
               </div>
@@ -148,4 +173,3 @@ export default function WeeklyForecast({ city }: { city: string }) {
     </div>
   )
 }
-
