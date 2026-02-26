@@ -48,6 +48,8 @@ export default function WeatherDashboard() {
     handleSearch('Jakarta')
   }, [])
 
+  console.log('weatherData', weatherData)
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl relative min-h-screen flex flex-col pb-20 overflow-x-hidden">
       {/* 3D Animated Background */}
@@ -139,44 +141,44 @@ export default function WeatherDashboard() {
             >
               {/* ── Top Row ── */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-12 xl:col-span-8 scroll-reveal-left">
+                <div className="lg:col-span-12 xl:col-span-8 h-full scroll-reveal-left">
                   <CurrentWeather data={weatherData} />
                 </div>
 
-                <div className="lg:col-span-12 xl:col-span-4 space-y-8 flex flex-col stagger-reveal">
+                <div className="lg:col-span-12 xl:col-span-4 space-y-8 flex flex-col">
                   <div className="glass-card glass-shimmer p-8 flex-grow flex flex-col justify-center min-h-[200px]">
                     <h3 className="text-white font-black mb-6 text-sm uppercase tracking-widest">Air Quality</h3>
-                    <AirQualityIndex city={weatherData.city} />
+                    <AirQualityIndex city={weatherData?.city} />
                   </div>
                   <div className="glass-card glass-shimmer p-8 flex-grow min-h-[200px]">
                     <h3 className="text-white font-black mb-6 text-sm uppercase tracking-widest">Highlights</h3>
-                    <WeatherDetails city={weatherData.city} />
+                    <WeatherDetails city={weatherData?.city} />
                   </div>
                 </div>
               </div>
 
               {/* ── Middle Row ── */}
               <div className="scroll-reveal-scale">
-                <HourlyForecast city={weatherData.city} />
+                <HourlyForecast city={weatherData?.city} />
               </div>
 
               {/* ── Bottom Section ── */}
               <div className="space-y-10">
                 <div className="scroll-reveal">
-                  <WeeklyForecast city={weatherData.city} />
+                  <WeeklyForecast city={weatherData?.city} />
                 </div>
 
                 <div className="scroll-reveal-right">
-                  <WeatherSuggestions condition={weatherData.condition} temp={weatherData.temperature} />
+                  <WeatherSuggestions condition={weatherData?.condition} temp={weatherData?.temperature} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="scroll-reveal-left">
                     <WeatherStory
-                      city={weatherData.city}
-                      condition={weatherData.condition}
-                      description={weatherData.description}
-                      temp={weatherData.temperature}
+                      city={weatherData?.city}
+                      condition={weatherData?.condition}
+                      description={weatherData?.description}
+                      temp={weatherData?.temperature}
                     />
                   </div>
                   <div className="scroll-reveal-right">

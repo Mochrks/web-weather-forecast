@@ -31,7 +31,7 @@ export default function CurrentWeather({ data }: { data: WeatherData | null }) {
 
   return (
     <GlassCard
-      className="w-full relative overflow-visible py-12 px-10 min-h-[450px] flex flex-col justify-between group glass-shimmer glass-glow"
+      className="w-full h-full relative overflow-visible py-10 px-10 flex flex-col justify-center gap-8 group glass-shimmer glass-glow"
       glow
       shimmer
     >
@@ -81,7 +81,7 @@ export default function CurrentWeather({ data }: { data: WeatherData | null }) {
       </div>
 
       <motion.div
-        className="grid grid-cols-2 gap-6 mt-12 pt-10 border-t border-white/10"
+        className="grid grid-cols-2 gap-6 mt-6 pt-6 border-t border-white/10"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.8 }}
