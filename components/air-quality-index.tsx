@@ -2,80 +2,83 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { Leaf } from 'lucide-react'
 
 export default function AirQualityIndex({ city }: { city: string }) {
   const [aqi, setAqi] = useState(0)
   const [description, setDescription] = useState('')
 
   useEffect(() => {
-    const fetchAirQuality = async () => {
-      const newAqi = Math.floor(Math.random() * 500)
-      setAqi(newAqi)
+    const newAqi = Math.floor(Math.random() * 200)
+    setAqi(newAqi)
 
-      if (newAqi <= 50) setDescription('Excellent')
-      else if (newAqi <= 100) setDescription('Nominal')
-      else if (newAqi <= 150) setDescription('Elevated')
-      else if (newAqi <= 200) setDescription('Hazardous')
-      else if (newAqi <= 300) setDescription('Critical')
-      else setDescription('Lethal')
-    }
-    fetchAirQuality()
+    if (newAqi <= 50) setDescription('Good')
+    else if (newAqi <= 100) setDescription('Moderate')
+    else if (newAqi <= 150) setDescription('Unhealthy')
+    else setDescription('Hazardous')
   }, [city])
 
   const getColor = (aqi: number) => {
-    if (aqi <= 50) return 'from-emerald-400 to-teal-500'
-    if (aqi <= 100) return 'from-yellow-400 to-amber-500'
-    if (aqi <= 150) return 'from-orange-400 to-orange-600'
-    if (aqi <= 200) return 'from-red-400 to-rose-600'
-    if (aqi <= 300) return 'from-purple-500 to-indigo-700'
-    return 'from-slate-800 to-black'
+    if (aqi <= 50) return { main: '#78FFB7', bg: 'rgba(120,255,183,0.1)', border: 'rgba(120,255,183,0.15)' }
+    if (aqi <= 100) return { main: '#F6AD55', bg: 'rgba(246,173,85,0.1)', border: 'rgba(246,173,85,0.15)' }
+    if (aqi <= 150) return { main: '#FC8181', bg: 'rgba(252,129,129,0.1)', border: 'rgba(252,129,129,0.15)' }
+    return { main: '#E53E3E', bg: 'rgba(229,62,62,0.1)', border: 'rgba(229,62,62,0.15)' }
   }
 
+  const colors = getColor(aqi)
+
   return (
-    <div className="h-full flex flex-col justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex flex-col">
-            <div className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-1">Atmospheric Score</div>
-            <p className="text-6xl font-black text-white tracking-tighter shadow-sm">{aqi}</p>
-          </div>
-          <div className="flex flex-col items-end">
-            <p className={`text-xs font-black px-4 py-1.5 rounded-full bg-gradient-to-r ${getColor(aqi)} text-white shadow-lg shadow-black/20 border border-white/20 tracking-widest uppercase`}>
-              {description}
-            </p>
-            <div className="flex gap-1 mt-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className={`w-1.5 h-1.5 rounded-full ${i < (aqi / 100) ? 'bg-white opacity-40' : 'bg-white/10'}`} />
-              ))}
-            </div>
-          </div>
+    <motion.div
+      initial={{ opacity: 0, x: 10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay: 0.3 }}
+      className="glass-card glass-shimmer"
+      style={{ padding: 'clamp(14px, 1.5vh, 20px) clamp(16px, 1.5vw, 20px)' }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Leaf size={14} style={{ color: colors.main }} />
+          <h3 className="text-sm font-bold tracking-tight" style={{ color: '#F5F7FA' }}>
+            Air Quality
+          </h3>
         </div>
+        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md"
+          style={{ color: colors.main, background: colors.bg, border: `1px solid ${colors.border}` }}>
+          {description}
+        </span>
+      </div>
 
-        <div className="relative h-5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5 backdrop-blur-3xl shadow-inner group">
-          <motion.div
-            className={`absolute top-0 left-0 h-full bg-gradient-to-r ${getColor(aqi)} shadow-[0_0_20px_rgba(255,255,255,0.2)]`}
-            initial={{ width: 0 }}
-            animate={{ width: `${(aqi / 500) * 100}%` }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Liquid Shimmer on Progress Bar */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[45deg] -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+      <div className="flex items-end gap-3 mb-3">
+        <motion.span
+          key={aqi}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-3xl font-extrabold tracking-tighter"
+          style={{ color: '#F5F7FA' }}
+        >
+          {aqi}
+        </motion.span>
+        <span className="text-[10px] font-medium pb-1" style={{ color: '#6B7A90' }}>AQI Index</span>
+      </div>
 
-            {/* Leading Glow */}
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-full bg-white/40 blur-md rounded-full" />
-          </motion.div>
-        </div>
+      {/* Progress bar */}
+      <div className="relative h-1.5 w-full rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+        <motion.div
+          className="absolute top-0 left-0 h-full rounded-full"
+          initial={{ width: 0 }}
+          animate={{ width: `${Math.min((aqi / 300) * 100, 100)}%` }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            background: `linear-gradient(90deg, #78FFB7, ${colors.main})`,
+            boxShadow: `0 0 10px ${colors.main}40`,
+          }}
+        />
+      </div>
 
-        <div className="flex justify-between items-center mt-3 scale-x-[1.02]">
-          <span className="text-[8px] font-black text-white tracking-tighter uppercase">Pristine 0</span>
-          <div className="h-0.5 flex-grow mx-4 bg-white/20 rounded-full" />
-          <span className="text-[8px] font-black text-white tracking-tighter uppercase">Maximum 500</span>
-        </div>
-      </motion.div>
-    </div>
+      <div className="flex justify-between mt-1.5">
+        <span className="text-[9px] font-medium" style={{ color: '#6B7A90' }}>0</span>
+        <span className="text-[9px] font-medium" style={{ color: '#6B7A90' }}>300</span>
+      </div>
+    </motion.div>
   )
 }

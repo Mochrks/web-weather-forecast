@@ -2,8 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { LucideIcon, Sun, Cloud, CloudRain, CloudSnow, Wind, Droplets, CloudFog, CloudLightning, CloudDrizzle } from 'lucide-react'
-import { GlassCard } from "@/components/ui/glass-card"
+import { LucideIcon, Sun, Cloud, CloudRain, CloudSnow, Wind, CloudFog, CloudLightning, CloudDrizzle } from 'lucide-react'
 import type { WeatherData } from '@/lib/weather-service'
 
 const weatherIcons: Record<string, LucideIcon> = {
@@ -24,87 +23,141 @@ const weatherIcons: Record<string, LucideIcon> = {
   'Tornado': Wind,
 }
 
-export default function CurrentWeather({ data }: { data: WeatherData | null }) {
+const conditionColors: Record<string, string> = {
+  'Clear': '#F6AD55',
+  'Clouds': '#A7B0C0',
+  'Rain': '#7DA2FF',
+  'Snow': '#E2E8F0',
+  'Thunderstorm': '#B794F4',
+  'Drizzle': '#7DA2FF',
+  'Mist': '#A7B0C0',
+}
+
+interface CurrentWeatherProps {
+  data: WeatherData
+  displayTemp: (temp: number) => number
+  unit: 'C' | 'F'
+}
+
+export default function CurrentWeather({ data, displayTemp, unit }: CurrentWeatherProps) {
   if (!data) return null
 
   const Icon = weatherIcons[data.condition] || Sun
+  const iconColor = conditionColors[data.condition] || '#78FFB7'
 
   return (
-    <GlassCard
-      className="w-full h-full relative overflow-visible py-10 px-10 flex flex-col justify-center gap-8 group glass-shimmer glass-glow"
-      glow
-      shimmer
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="glass-card glass-shimmer flex-shrink-0 relative overflow-hidden"
+      style={{ padding: 'clamp(12px, 2vw, 24px)' }}
     >
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between z-10 relative">
-        <div className="text-left">
+      {/* Ambient glow */}
+      <div className="absolute top-2 right-8 w-32 h-32 rounded-full blur-[60px] animate-breathe pointer-events-none"
+        style={{ background: `${iconColor}15` }} />
+
+      <div className="relative z-10">
+        {/* Top row: Icon + City + Stats — responsive flex */}
+        <div className="flex items-center gap-4 md:gap-6 flex-wrap">
+          {/* Weather Icon */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="relative flex-shrink-0"
+            animate={{ y: [0, -3, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter">
+            <div className="absolute inset-0 blur-[25px] rounded-full" style={{ background: `${iconColor}25` }} />
+            <Icon className="relative z-10 w-10 h-10 md:w-12 md:h-12" style={{ color: iconColor }} strokeWidth={1.2} />
+          </motion.div>
+
+          {/* City Info */}
+          <div className="flex-shrink-0 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+              <h2 className="text-lg md:text-xl lg:text-2xl font-bold tracking-tight truncate" style={{ color: '#F5F7FA' }}>
                 {data.city}
               </h2>
-              <span className="glass-pill px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+              <span className="glass-pill px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider flex-shrink-0" style={{ color: '#A7B0C0' }}>
                 {data.country}
               </span>
             </div>
-            <p className="text-white text-lg font-medium tracking-wide">Current Weather</p>
-          </motion.div>
+            <p className="text-[11px] font-medium capitalize" style={{ color: '#A7B0C0' }}>{data.description}</p>
+          </div>
 
-          <motion.div
-            className="mt-10"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="flex items-start">
-              <span className="text-[9rem] leading-none font-black text-white tracking-tighter drop-shadow-2xl">
-                {data.temperature}°
-              </span>
+          {/* Divider — hidden on mobile */}
+          <div className="hidden md:block w-px h-10 mx-1" style={{ background: 'rgba(255,255,255,0.08)' }} />
+
+          {/* Stats row — wraps on mobile */}
+          <div className="flex items-center gap-4 md:gap-6 flex-wrap">
+            {/* Temperature */}
+            <div className="flex-shrink-0">
+              <motion.span
+                key={`${data.temperature}-${unit}`}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tighter leading-none block"
+                style={{ color: '#F5F7FA' }}
+              >
+                +{displayTemp(data.temperature)}°
+              </motion.span>
+              <p className="text-[9px] md:text-[10px] font-semibold mt-0.5" style={{ color: '#6B7A90' }}>Temperature</p>
             </div>
-            <p className="text-2xl md:text-3xl text-white capitalize font-light mt-[-15px] pl-2 tracking-wide">{data.description}</p>
-          </motion.div>
+
+            {/* Humidity */}
+            <div className="flex-shrink-0">
+              <span className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tighter leading-none block" style={{ color: '#F5F7FA' }}>
+                {data.humidity}<span className="text-sm md:text-lg font-bold" style={{ color: '#A7B0C0' }}>%</span>
+              </span>
+              <p className="text-[9px] md:text-[10px] font-semibold mt-0.5" style={{ color: '#6B7A90' }}>Humidity</p>
+            </div>
+
+            {/* Wind */}
+            <div className="flex-shrink-0">
+              <span className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tighter leading-none block" style={{ color: '#F5F7FA' }}>
+                {data.windSpeed}<span className="text-xs md:text-base font-bold ml-0.5" style={{ color: '#A7B0C0' }}>km/h</span>
+              </span>
+              <p className="text-[9px] md:text-[10px] font-semibold mt-0.5" style={{ color: '#6B7A90' }}>Wind speed</p>
+            </div>
+          </div>
         </div>
 
-        <motion.div
-          className="absolute top-0 right-0 md:relative md:top-auto md:right-auto opacity-30 md:opacity-100 scale-90 md:scale-100 origin-top-right transition-all duration-700 group-hover:scale-110 group-hover:rotate-6"
-          initial={{ opacity: 0, scale: 0.7, rotate: -20 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 50, damping: 15, delay: 0.3 }}
-        >
-          {/* Animated Glow Behind Icon */}
-          <div className="absolute inset-0 blur-[100px] bg-blue-400/30 rounded-full animate-aurora" />
-          <Icon size={240} className="relative z-10 text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]" strokeWidth={1} />
-        </motion.div>
+        {/* Hourly mini row */}
+        <HourlyMiniRow />
       </div>
+    </motion.div>
+  )
+}
 
-      <motion.div
-        className="grid grid-cols-2 gap-6 mt-6 pt-6 border-t border-white/10"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-      >
-        <div className="flex items-center space-x-5 p-5 rounded-3xl bg-white/5 hover:bg-white/10 transition-all duration-500 border border-white/5 active:scale-95 group/stat">
-          <div className="p-4 rounded-2xl bg-white/5 text-blue-300 group-hover/stat:scale-110 transition-transform duration-500 shadow-inner">
-            <Wind size={28} />
-          </div>
-          <div>
-            <p className="text-xs text-white font-bold uppercase tracking-widest mb-1">Wind Speed</p>
-            <p className="text-2xl font-black text-white tracking-tight">{data.windSpeed} <span className="text-xs font-medium text-white tracking-normal ml-1">km/h</span></p>
-          </div>
+
+/* Inline hourly mini-scroll inside the current weather card */
+function HourlyMiniRow() {
+  const now = new Date()
+  const hours = Array.from({ length: 12 }, (_, i) => {
+    const h = new Date(now)
+    h.setHours(now.getHours() + i)
+    return {
+      time: i === 0 ? 'Now' : h.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }).toLowerCase(),
+      temp: Math.floor(Math.random() * 10) + 20,
+    }
+  })
+
+  return (
+    <div className="flex gap-1.5 mt-3 md:mt-4 pt-3 overflow-x-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', scrollbarWidth: 'none' }}>
+      {hours.map((h, i) => (
+        <div
+          key={h.time}
+          className="flex-shrink-0 flex flex-col items-center gap-0.5 rounded-xl transition-all duration-300"
+          style={{
+            padding: '5px 8px',
+            minWidth: '48px',
+            background: i === 0 ? 'rgba(120,255,183,0.06)' : 'transparent',
+            border: i === 0 ? '1px solid rgba(120,255,183,0.12)' : '1px solid transparent',
+            borderRadius: '12px',
+          }}
+        >
+          <span className="text-[9px] font-semibold" style={{ color: i === 0 ? '#78FFB7' : '#6B7A90' }}>{h.time}</span>
+          <span className="text-[11px] font-bold" style={{ color: '#F5F7FA' }}>{h.temp}°</span>
         </div>
-        <div className="flex items-center space-x-5 p-5 rounded-3xl bg-white/5 hover:bg-white/10 transition-all duration-500 border border-white/5 active:scale-95 group/stat">
-          <div className="p-4 rounded-2xl bg-white/5 text-cyan-300 group-hover/stat:scale-110 transition-transform duration-500 shadow-inner">
-            <Droplets size={28} />
-          </div>
-          <div>
-            <p className="text-xs text-white font-bold uppercase tracking-widest mb-1">Humidity</p>
-            <p className="text-2xl font-black text-white tracking-tight">{data.humidity}<span className="text-xs font-medium text-white tracking-normal ml-1">%</span></p>
-          </div>
-        </div>
-      </motion.div>
-    </GlassCard>
+      ))}
+    </div>
   )
 }

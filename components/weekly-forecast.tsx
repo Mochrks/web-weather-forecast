@@ -1,16 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Sun, Cloud, CloudRain, CloudSnow, Wind } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { motion } from 'framer-motion'
+import { Sun, Cloud, CloudRain, CloudSnow, Wind, type LucideIcon } from 'lucide-react'
 
-const weatherIcons = {
+const weatherIcons: Record<string, LucideIcon> = {
   'sunny': Sun,
   'cloudy': Cloud,
   'rainy': CloudRain,
@@ -22,154 +16,107 @@ type WeatherCondition = keyof typeof weatherIcons
 
 interface DayForecast {
   date: Date
-  temperature: {
-    min: number
-    max: number
-  }
+  temperature: { min: number; max: number }
   condition: WeatherCondition
   precipitation: number
 }
 
-export default function WeeklyForecast({ city }: { city: string }) {
+interface WeeklyForecastProps {
+  city: string
+  displayTemp: (temp: number) => number
+}
+
+export default function WeeklyForecast({ city, displayTemp }: WeeklyForecastProps) {
   const [forecast, setForecast] = useState<DayForecast[]>([])
-  const [selectedDay, setSelectedDay] = useState<number | null>(null)
 
   useEffect(() => {
-    const fetchForecast = async () => {
-      const today = new Date()
-      const newForecast = Array.from({ length: 7 }, (_, i) => {
-        const date = new Date(today)
-        date.setDate(today.getDate() + i)
-        return {
-          date,
-          temperature: {
-            min: Math.floor(Math.random() * 15) + 10,
-            max: Math.floor(Math.random() * 15) + 20,
-          },
-          condition: Object.keys(weatherIcons)[Math.floor(Math.random() * Object.keys(weatherIcons).length)] as WeatherCondition,
-          precipitation: Math.floor(Math.random() * 100),
-        }
-      })
-      setForecast(newForecast)
-    }
-    fetchForecast()
+    const today = new Date()
+    const newForecast = Array.from({ length: 5 }, (_, i) => {
+      const date = new Date(today)
+      date.setDate(today.getDate() + i + 1)
+      return {
+        date,
+        temperature: {
+          min: Math.floor(Math.random() * 10) + 15,
+          max: Math.floor(Math.random() * 10) + 25,
+        },
+        condition: Object.keys(weatherIcons)[Math.floor(Math.random() * Object.keys(weatherIcons).length)] as WeatherCondition,
+        precipitation: Math.floor(Math.random() * 80),
+      }
+    })
+    setForecast(newForecast)
   }, [city])
 
   return (
-    <div className="glass-panel text-white h-full p-8 flex flex-col glass-shimmer">
-      <div className="flex justify-between items-center mb-10">
-        <div>
-          <h3 className="text-2xl font-black text-white tracking-tight text-glow">7-Day Forecast</h3>
-          <p className="text-white text-sm font-medium tracking-wide">Extended outlook for {city}</p>
-        </div>
-        <div className="glass-pill px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white">
-          PRO-DATA
-        </div>
+    <motion.div
+      initial={{ opacity: 0, x: 10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="glass-card glass-shimmer flex flex-col"
+      style={{ padding: 'clamp(12px, 1.5vh, 20px) clamp(12px, 1.5vw, 20px)' }}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-bold tracking-tight" style={{ color: '#F5F7FA' }}>
+          5-Day Forecast
+        </h3>
+        <span className="text-[9px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-md" 
+          style={{ color: '#7DA2FF', background: 'rgba(125,162,255,0.08)', border: '1px solid rgba(125,162,255,0.12)' }}>
+          Extended
+        </span>
       </div>
 
-      <div className="flex-grow flex flex-col justify-center">
-        <div className="grid grid-cols-7 gap-3 mb-6">
-          {forecast.map((day, index) => {
-            const WeatherIcon = weatherIcons[day.condition]
-            const isSelected = selectedDay === index
-            return (
-              <TooltipProvider key={day.date.toISOString()}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <motion.button
-                      layout
-                      onClick={() => setSelectedDay(isSelected ? null : index)}
-                      className={`relative flex flex-col items-center justify-between p-4 rounded-3xl transition-all duration-500 border ${isSelected
-                        ? 'bg-white/20 border-white/40 shadow-[0_0_25px_rgba(255,255,255,0.1)]'
-                        : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'
-                        } h-36 sm:h-44 group`}
-                    >
-                      <span className="text-[10px] font-black text-white uppercase tracking-widest">
-                        {day.date.toLocaleDateString('en-US', { weekday: 'short' })}
-                      </span>
+      <div className="flex flex-col gap-1.5">
+        {forecast.map((day, index) => {
+          const WeatherIcon = weatherIcons[day.condition]
+          const dayName = index === 0
+            ? 'Tomorrow'
+            : day.date.toLocaleDateString('en-US', { weekday: 'short' })
 
-                      <div className="relative">
-                        {isSelected && (
-                          <div className="absolute inset-0 blur-xl bg-white/30 rounded-full animate-pulse-slow" />
-                        )}
-                        <WeatherIcon
-                          size={28}
-                          className={`relative z-10 my-2 transition-all duration-700 ${isSelected ? 'scale-125 text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]' : 'text-white/60 group-hover:scale-110 group-hover:text-white'}`}
-                        />
-                      </div>
+          // Calculate bar width
+          const range = day.temperature.max - day.temperature.min
+          const barWidth = Math.max(40, (range / 20) * 100)
 
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-lg font-black tracking-tighter">{day.temperature.max}°</span>
-                        <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-white/40 rounded-full" style={{ width: `${(day.temperature.max / 40) * 100}%` }} />
-                        </div>
-                        <span className="text-[10px] font-medium text-white/60 tracking-wide">{day.temperature.min}°</span>
-                      </div>
-
-                      {/* Active Indicator */}
-                      {isSelected && (
-                        <motion.div
-                          layoutId="activeDayIndicator"
-                          className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-full shadow-[0_0_12px_rgba(255,255,255,0.8)]"
-                        />
-                      )}
-                    </motion.button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="glass border-white/20 text-white font-bold py-2 px-4 rounded-xl backdrop-blur-3xl">
-                    <p className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-blue-400" />
-                      Precipitation: {day.precipitation}%
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )
-          })}
-        </div>
-
-        <AnimatePresence>
-          {selectedDay !== null && (
+          return (
             <motion.div
-              initial={{ opacity: 0, height: 0, y: 20 }}
-              animate={{ opacity: 1, height: 'auto', y: 0 }}
-              exit={{ opacity: 0, height: 0, y: 20 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="overflow-hidden"
+              key={day.date.toISOString()}
+              initial={{ opacity: 0, x: 8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 + index * 0.05, duration: 0.4 }}
+              className="flex items-center gap-2 md:gap-3 py-1.5 md:py-2 px-2 md:px-2.5 rounded-xl transition-all duration-300 hover:bg-white/[0.03] group cursor-default"
             >
-              <div className="p-6 bg-white/10 rounded-[2.5rem] border border-white/20 flex flex-col sm:flex-row justify-between items-center gap-6 glass-glow shadow-2xl">
-                <div className="flex items-center gap-6">
-                  <div className="p-5 bg-white/10 rounded-3xl border border-white/10">
-                    {(() => {
-                      const SelectedIcon = weatherIcons[forecast[selectedDay!].condition];
-                      return <SelectedIcon size={40} />;
-                    })()}
-                  </div>
-                  <div>
-                    <h4 className="font-black text-2xl text-white tracking-tight">
-                      {forecast[selectedDay].date.toLocaleDateString('en-US', { weekday: 'long' })}
-                    </h4>
-                    <p className="text-white font-bold uppercase tracking-widest text-[10px] mt-1">{forecast[selectedDay].condition} Forecast</p>
-                  </div>
+              {/* Day name */}
+              <span className="text-[11px] md:text-xs font-semibold w-14 md:w-16 flex-shrink-0" style={{ color: index === 0 ? '#78FFB7' : '#A7B0C0' }}>
+                {dayName}
+              </span>
+
+              {/* Icon */}
+              <WeatherIcon size={16} strokeWidth={1.5} className="flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ color: '#A7B0C0' }} />
+
+              {/* Temp bar */}
+              <div className="flex-1 flex items-center gap-2 min-w-0">
+                <span className="text-[11px] font-medium w-7 text-right flex-shrink-0" style={{ color: '#6B7A90' }}>
+                  {displayTemp(day.temperature.min)}°
+                </span>
+                <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                  <motion.div
+                    className="h-full rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${barWidth}%` }}
+                    transition={{ delay: 0.3 + index * 0.08, duration: 0.6 }}
+                    style={{
+                      background: `linear-gradient(90deg, #7DA2FF, #78FFB7)`,
+                      marginLeft: `${(day.temperature.min / 40) * 30}%`,
+                    }}
+                  />
                 </div>
-                <div className="grid grid-cols-3 gap-8 text-center sm:text-right">
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-white font-black uppercase tracking-widest">High Temp</p>
-                    <p className="font-black text-2xl tracking-tighter text-white">{forecast[selectedDay].temperature.max}°</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-white font-black uppercase tracking-widest">Low Temp</p>
-                    <p className="font-black text-2xl tracking-tighter text-white">{forecast[selectedDay].temperature.min}°</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-white font-black uppercase tracking-widest">Rain Chance</p>
-                    <p className="font-black text-2xl tracking-tighter text-blue-200">{forecast[selectedDay].precipitation}%</p>
-                  </div>
-                </div>
+                <span className="text-[11px] font-bold w-7 flex-shrink-0" style={{ color: '#F5F7FA' }}>
+                  {displayTemp(day.temperature.max)}°
+                </span>
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
+          )
+        })}
       </div>
-    </div>
+    </motion.div>
   )
 }

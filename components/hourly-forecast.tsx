@@ -1,121 +1,158 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts"
 
-interface HourlyData {
-  hour: string
-  temperature: number
+interface ChartData {
+  month: string
+  value: number
 }
 
-export default function HourlyForecast({ city }: { city: string }) {
-  const [hourlyData, setHourlyData] = useState<HourlyData[]>([])
+const tabs = ['Humidity', 'UV index', 'Rainfall', 'Pressure'] as const
+
+function generateData(tab: string): ChartData[] {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  return months.map(m => {
+    let value: number
+    if (tab === 'Humidity') value = Math.floor(Math.random() * 50) + 30
+    else if (tab === 'UV index') value = Math.floor(Math.random() * 10) + 1
+    else if (tab === 'Rainfall') value = Math.floor(Math.random() * 80) + 5
+    else value = Math.floor(Math.random() * 60) + 980
+    return { month: m, value }
+  })
+}
+
+interface HourlyForecastProps {
+  city: string
+  displayTemp: (temp: number) => number
+}
+
+export default function HourlyForecast({ city }: HourlyForecastProps) {
+  const [activeTab, setActiveTab] = useState<typeof tabs[number]>('Humidity')
+  const [data, setData] = useState<ChartData[]>([])
 
   useEffect(() => {
-    const fetchHourlyForecast = async () => {
-      const newHourlyData = Array.from({ length: 24 }, (_, i) => ({
-        hour: `${i}:00`,
-        temperature: Math.floor(Math.random() * 35)
-      }))
-      setHourlyData(newHourlyData)
-    }
-    fetchHourlyForecast()
-  }, [city])
+    setData(generateData(activeTab))
+  }, [city, activeTab])
+
+  const avg = useMemo(() => {
+    if (data.length === 0) return 0
+    return Math.round(data.reduce((s, d) => s + d.value, 0) / data.length)
+  }, [data])
+
+  const suffix = activeTab === 'Humidity' ? '%' : activeTab === 'UV index' ? '' : activeTab === 'Rainfall' ? 'mm' : 'hPa'
 
   return (
-    <div className="glass-panel text-white h-full p-8 glass-shimmer">
-      <div className="flex justify-between items-start mb-10">
-        <div>
-          <h3 className="text-2xl font-black text-white tracking-tight">Hourly Pulse</h3>
-          <p className="text-white text-sm font-medium tracking-wide">Temperature variation in {city}</p>
-        </div>
-        <div className="flex gap-2">
-          <div className="glass-pill px-3 py-1 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_white]" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-white">Real-time</span>
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="glass-card glass-shimmer flex-1 min-h-0 flex flex-col h-full"
+      style={{ padding: 'clamp(12px, 1.5vh, 22px) clamp(14px, 2vw, 28px)' }}
+    >
+      {/* Header with tabs — tabs scroll on mobile */}
+      <div className="flex items-center justify-between mb-3 flex-shrink-0 gap-3">
+        <h3 className="text-base md:text-lg font-bold tracking-tight flex-shrink-0" style={{ color: '#F5F7FA' }}>
+          Overview
+        </h3>
+        <div className="flex gap-1 p-0.5 rounded-xl overflow-x-auto flex-shrink min-w-0"
+          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', scrollbarWidth: 'none' }}>
+          {tabs.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="px-2.5 md:px-3 py-1 text-[9px] md:text-[10px] font-semibold rounded-lg transition-all duration-300 whitespace-nowrap flex-shrink-0"
+              style={{
+                color: activeTab === tab ? '#F5F7FA' : '#6B7A90',
+                background: activeTab === tab ? 'rgba(255,255,255,0.08)' : 'transparent',
+                border: activeTab === tab ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+              }}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="w-full h-[350px] relative">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full h-full"
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={hourlyData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="tempGradientFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="glowGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity={1} />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity={0.6} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-              <XAxis
-                dataKey="hour"
-                stroke="rgba(255,255,255,0.6)"
-                fontSize={10}
-                fontWeight="black"
-                tickLine={false}
-                axisLine={false}
-                dy={15}
-              />
-              <YAxis
-                stroke="rgba(255,255,255,0.6)"
-                fontSize={10}
-                fontWeight="black"
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value}°`}
-                dx={-10}
-              />
-              <Tooltip
-                cursor={{ stroke: 'rgba(255,255,255,0.2)', strokeWidth: 2, strokeDasharray: '5 5' }}
-                contentStyle={{
-                  backgroundColor: 'rgba(20, 20, 30, 0.4)',
-                  backdropFilter: 'blur(30px) saturate(2)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '24px',
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
-                  padding: '12px 20px'
-                }}
-                labelStyle={{ color: '#ffffff', fontWeight: '900', fontSize: '14px', marginBottom: '4px' }}
-                itemStyle={{ color: '#ffffff', fontWeight: '700' }}
-                formatter={(value: number) => [`${value}°`, 'Temperature']}
-              />
-              <Area
-                type="monotone"
-                dataKey="temperature"
-                stroke="url(#glowGradient)"
-                strokeWidth={4}
-                fill="url(#tempGradientFill)"
-                animationDuration={2000}
-                dot={false}
-                activeDot={{
-                  r: 8,
-                  fill: '#ffffff',
-                  stroke: 'rgba(255,255,255,0.3)',
-                  strokeWidth: 10,
-                  className: "animate-pulse"
-                }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </motion.div>
-      </div>
+      {/* Chart — min height enforced for mobile */}
+      <div className="flex-1 min-h-[180px] md:min-h-0 relative">
+        {/* Average label */}
+        <div className="absolute top-2 left-1/4 md:left-1/3 z-10 flex items-center gap-1.5 px-2 md:px-2.5 py-1 rounded-lg"
+          style={{ background: 'rgba(20,28,45,0.8)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#78FFB7' }} />
+          <span className="text-[9px] md:text-[10px] font-semibold" style={{ color: '#A7B0C0' }}>
+            Average {avg}{suffix}
+          </span>
+        </div>
 
-      <div className="mt-8 flex justify-between items-center text-white/60 text-[10px] font-black uppercase tracking-[0.2em]">
-        <span>00:00 Midnight</span>
-        <span>12:00 Noon</span>
-        <span>23:59 Tonight</span>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 25, right: 5, left: -25, bottom: 0 }}>
+            <defs>
+              <linearGradient id="overviewFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#A7B0C0" stopOpacity={0.15} />
+                <stop offset="95%" stopColor="#A7B0C0" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="overviewStroke" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#6B7A90" stopOpacity={0.6} />
+                <stop offset="50%" stopColor="#A7B0C0" stopOpacity={1} />
+                <stop offset="100%" stopColor="#6B7A90" stopOpacity={0.6} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
+            <XAxis
+              dataKey="month"
+              stroke="rgba(255,255,255,0.4)"
+              fontSize={9}
+              fontWeight={600}
+              tickLine={false}
+              axisLine={false}
+              dy={8}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              stroke="rgba(255,255,255,0.4)"
+              fontSize={9}
+              fontWeight={600}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v) => activeTab === 'Pressure' ? '' : `${v}${activeTab === 'Humidity' || activeTab === 'Rainfall' ? '%' : ''}`}
+              dx={-5}
+              width={35}
+            />
+            <Tooltip
+              cursor={{ stroke: 'rgba(255,255,255,0.15)', strokeWidth: 1, strokeDasharray: '4 4' }}
+              contentStyle={{
+                backgroundColor: 'rgba(20, 28, 45, 0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: '14px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                padding: '8px 14px',
+                fontSize: '11px',
+              }}
+              labelStyle={{ color: '#F5F7FA', fontWeight: '700', fontSize: '11px', marginBottom: '2px' }}
+              itemStyle={{ color: '#A7B0C0', fontWeight: '600', fontSize: '11px' }}
+              formatter={(value: number) => [`${value}${suffix}`, activeTab]}
+            />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="url(#overviewStroke)"
+              strokeWidth={2}
+              fill="url(#overviewFill)"
+              animationDuration={1200}
+              dot={false}
+              activeDot={{
+                r: 4,
+                fill: '#F5F7FA',
+                stroke: 'rgba(255,255,255,0.2)',
+                strokeWidth: 5,
+              }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
-    </div>
+    </motion.div>
   )
 }
